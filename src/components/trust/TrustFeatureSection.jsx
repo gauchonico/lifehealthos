@@ -1,0 +1,5 @@
+import { CheckCircle2 } from "lucide-react";
+
+export default function TrustFeatureSection({ id, eyebrow, title, description, items, image, reverse = false }) {
+  return <section id={id} className="scroll-mt-36 py-20 md:py-28"><div className={`container-wide grid items-center gap-12 lg:grid-cols-2 ${reverse ? "lg:[&>*:first-child]:order-2" : ""}`}><div><p className="text-sm font-bold uppercase tracking-[0.16em] text-teal-600">{eyebrow}</p><h2 className="mt-3 font-display text-3xl font-bold text-navy-900 md:text-5xl">{title}</h2><p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-600">{description}</p><div className="mt-8 grid gap-3 sm:grid-cols-2">{items.map((item) => <div key={item} className="flex items-center gap-3 rounded-xl bg-slate-50 p-3 text-sm font-semibold text-navy-900"><CheckCircle2 className="h-4 w-4 flex-none text-teal-600"/>{item}</div>)}</div></div><div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-xl"><img src={image} alt="LifeHealth trust and healthcare collaboration" className="h-80 w-full object-cover md:h-96"/></div></div></section>;
+}

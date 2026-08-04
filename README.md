@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Next.js marketing/content site for LHN, statically exported and content-driven by the Sanity Studio in `../studio`.
 
-## Getting Started
+## Setup
 
-First, run the development server:
+1. Create the Sanity project first (see `../studio/README.md`) — you need its Project ID before this app can fetch content.
+2. Copy `.env.local.example` to `.env.local` and fill in:
+   ```
+   NEXT_PUBLIC_SANITY_PROJECT_ID=<your project id>
+   NEXT_PUBLIC_SANITY_DATASET=production
+   NEXT_PUBLIC_SANITY_API_VERSION=2025-01-01
+   ```
+3. `npm install` (already done if you're reading this right after scaffolding)
+4. `npm run dev` — open http://localhost:3000
+
+## Content-driven routes
+
+- `/blog`, `/blog/[slug]` — blog posts (`post` documents in Sanity)
+- `/resources`, `/resources/[slug]` — case studies, white papers, webinars, etc. (`resource` documents)
+- `/faq` — FAQ list (`faq` documents)
+
+These are intentionally plain/unstyled for now — they prove the Sanity → Next.js data flow. The next step is porting the visual design from the original Base44 pages (`src/pages/Resources.jsx`, `src/pages/FAQPage.jsx`, etc. in the repo root) onto these routes, and adding the rest of the marketing pages (Home, About, Solutions, Trust Center...).
+
+## Build & static export
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Because `next.config.ts` sets `output: "export"`, this produces a fully static `out/` directory — no Node server required to serve it. That's what gets uploaded to Hostinger.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Dynamic routes (`/blog/[slug]`, `/resources/[slug]`) are pre-rendered for every published slug at build time via `generateStaticParams`. **This means new/edited content requires a rebuild** — set up a Sanity webhook (Settings → API → Webhooks in sanity.io) pointing at whatever rebuild trigger you wire up on deploy (a small script over SSH, or a CI job that runs `npm run build` and re-uploads `out/`). Until that's set up, rebuild and redeploy manually after editing content.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Deploying to Hostinger (shared business hosting)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`out/` is static HTML/CSS/JS — upload its contents to `public_html` (or a subdirectory) via File Manager or SFTP. No Node.js app setup needed in cPanel for this piece, since there's no server process to run. (The Sanity Studio, if you self-host it instead of using Sanity's free hosting, is a separate concern — see `../studio/README.md`.)

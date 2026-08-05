@@ -1,17 +1,26 @@
-// Stateless email+password auth for /workspace. There is no database: the
-// "password" emailed to a requester IS a signed, self-verifying token (HMAC
-// over {email, exp}), and the session cookie set after login is the same
-// kind of token with a longer TTL. Nothing is persisted, so a leaked access
-// token can't be individually revoked before it expires (30 min) — an
-// accepted tradeoff for a low-volume internal tool with no extra
-// infrastructure (no KV/DB) to run.
+// Email+password auth for /workspace, in two tiers:
+//
+// - Admin: one fixed account (WORKSPACE_ADMIN_EMAIL / WORKSPACE_ADMIN_PASSWORD
+//   env vars), logs in directly with a real password — no email round-trip.
+// - Members: anyone else must first have an `accessRequest` Sanity doc with
+//   status "approved" (set by the admin from inside /workspace) before they
+//   can request a one-time login code by email.
+//
+// Tokens (the emailed one-time code, and the session cookie) are stateless:
+// signed, self-verifying HMACs over {email, role, purpose, exp} — nothing
+// persisted for them, so a leaked access code can't be individually revoked
+// before its 30-minute expiry. The *approval* state itself (who's allowed to
+// request a code at all) is what's actually persisted, in Sanity.
 
 const ACCESS_TOKEN_TTL_SECONDS = 30 * 60; // 30 minutes
 const SESSION_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
 export const SESSION_COOKIE_NAME = "workspace_session";
 
+export type Role = "admin" | "member";
+
 type TokenPayload = {
   email: string;
+  role: Role;
   purpose: "access" | "session";
   exp: number;
 };
@@ -37,10 +46,10 @@ function getSecret(): string {
   return secret;
 }
 
-async function hmac(payloadB64: string, secret: string): Promise<string> {
+async function hmac(payload: string, secret: string): Promise<string> {
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(payloadB64));
+  const sig = await crypto.subtle.sign("HMAC", key, encoder.encode(payload));
   return bytesToBase64url(new Uint8Array(sig));
 }
 
@@ -69,16 +78,27 @@ async function verifyToken(token: string, purpose: TokenPayload["purpose"]): Pro
   }
 }
 
-export function isEmailAllowed(email: string): boolean {
-  const allowlist = (process.env.WORKSPACE_ALLOWED_EMAILS || "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return allowlist.includes(email.trim().toLowerCase());
+export function getAdminEmail(): string {
+  return (process.env.WORKSPACE_ADMIN_EMAIL || "").trim().toLowerCase();
+}
+
+export function isAdminEmail(email: string): boolean {
+  const adminEmail = getAdminEmail();
+  return !!adminEmail && email.trim().toLowerCase() === adminEmail;
+}
+
+// Constant-time-ish comparison: HMAC both sides first so the compared
+// strings are fixed-length digests rather than the raw, variable-length
+// secrets — avoids a naive `===` leaking length/prefix via timing.
+export async function verifyAdminPassword(password: string): Promise<boolean> {
+  const expected = process.env.WORKSPACE_ADMIN_PASSWORD;
+  if (!expected) return false;
+  const [a, b] = await Promise.all([hmac(password, getSecret()), hmac(expected, getSecret())]);
+  return a === b;
 }
 
 export function createAccessToken(email: string): Promise<string> {
-  return createToken({ email: email.trim().toLowerCase(), purpose: "access" }, ACCESS_TOKEN_TTL_SECONDS);
+  return createToken({ email: email.trim().toLowerCase(), role: "member", purpose: "access" }, ACCESS_TOKEN_TTL_SECONDS);
 }
 
 export async function verifyAccessToken(email: string, token: string): Promise<boolean> {
@@ -86,8 +106,8 @@ export async function verifyAccessToken(email: string, token: string): Promise<b
   return !!payload && payload.email === email.trim().toLowerCase();
 }
 
-export function createSessionToken(email: string): Promise<string> {
-  return createToken({ email: email.trim().toLowerCase(), purpose: "session" }, SESSION_TOKEN_TTL_SECONDS);
+export function createSessionToken(email: string, role: Role): Promise<string> {
+  return createToken({ email: email.trim().toLowerCase(), role, purpose: "session" }, SESSION_TOKEN_TTL_SECONDS);
 }
 
 export async function verifySessionToken(token: string): Promise<TokenPayload | null> {

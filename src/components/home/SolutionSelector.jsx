@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Building2, Stethoscope, FlaskConical, Microscope, Landmark, Shield, Home, BedDouble, Heart, Briefcase, Ribbon, Users, Globe, Activity } from "lucide-react";
 import { motion } from "framer-motion";
-import { solutions } from "@/lib/solutionsData";
 import SectionHeading from "@/components/shared/SectionHeading";
 import PlatformMapPreview from "@/components/shared/PlatformMapPreview";
 
+const iconMap = { Building2, Stethoscope, FlaskConical, Microscope, Landmark, Shield, Home, BedDouble, Heart, Briefcase, Ribbon, Users, Globe, Activity };
 const solutionTones = ["bg-sky-50 text-sky-600", "bg-teal-50 text-teal-600", "bg-amber-50 text-amber-600", "bg-violet-50 text-violet-600", "bg-emerald-50 text-emerald-600", "bg-rose-50 text-rose-600", "bg-indigo-50 text-indigo-600", "bg-orange-50 text-orange-600", "bg-pink-50 text-pink-600", "bg-lime-50 text-lime-600"];
 
-export default function SolutionSelector() {
+export default function SolutionSelector({ solutions = [] }) {
   return (
     <section id="solutions" className="section-padding bg-white">
       <div className="container-wide">
@@ -20,7 +20,7 @@ export default function SolutionSelector() {
         />
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {solutions.map((solution, i) => (
-            <SolutionCard key={solution.id} solution={solution} index={i} />
+            <SolutionCard key={solution._id} solution={solution} index={i} />
           ))}
         </div>
 
@@ -49,7 +49,7 @@ export default function SolutionSelector() {
 }
 
 function SolutionCard({ solution, index }) {
-  const Icon = solution.icon;
+  const Icon = iconMap[solution.icon] || Building2;
   const tone = solutionTones[index % solutionTones.length];
   return (
     <motion.div

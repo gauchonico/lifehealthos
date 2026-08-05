@@ -1,8 +1,12 @@
+export type ObjectListItemField = { name: string; label: string; multiline?: boolean };
+
 export type FieldConfig =
   | { name: string; label: string; type: "string" | "text" | "url" | "date" | "tags" | "markdown" | "number"; required?: boolean }
   | { name: string; label: string; type: "select"; options: { label: string; value: string }[]; required?: boolean }
   | { name: string; label: string; type: "boolean" }
-  | { name: string; label: string; type: "image" | "file"; required?: boolean };
+  | { name: string; label: string; type: "image" | "file"; required?: boolean }
+  /** A repeatable list of small objects, e.g. { title, description } pairs. Stored as a Sanity object array with `_type: itemType`. */
+  | { name: string; label: string; type: "objectList"; itemType: string; itemFields: ObjectListItemField[] };
 
 export type CollectionConfig = {
   key: string;
@@ -31,7 +35,6 @@ export const collections: CollectionConfig[] = [
           { label: "Case Study", value: "case_study" },
           { label: "White Paper", value: "white_paper" },
           { label: "Product Brief", value: "product_brief" },
-          { label: "News", value: "news" },
         ],
       },
       { name: "summary", label: "Summary", type: "text" },
@@ -68,6 +71,69 @@ export const collections: CollectionConfig[] = [
       { name: "summary", label: "Summary", type: "text" },
       { name: "tags", label: "Tags (comma-separated)", type: "tags" },
       { name: "publishDate", label: "Publish Date", type: "date" },
+      { name: "isPublished", label: "Published", type: "boolean" },
+    ],
+  },
+  {
+    key: "news",
+    sanityType: "news",
+    label: "News",
+    fields: [
+      { name: "title", label: "Title", type: "string", required: true },
+      { name: "excerpt", label: "Excerpt", type: "text" },
+      { name: "coverImage", label: "Cover Image", type: "image" },
+      { name: "body", label: "Body (Markdown)", type: "markdown" },
+      { name: "tags", label: "Tags (comma-separated)", type: "tags" },
+      { name: "publishDate", label: "Publish Date", type: "date" },
+      { name: "isPublished", label: "Published", type: "boolean" },
+    ],
+  },
+  {
+    key: "solutions",
+    sanityType: "solution",
+    label: "Solutions",
+    titleField: "name",
+    fields: [
+      { name: "name", label: "Name", type: "string", required: true },
+      { name: "shortName", label: "Short Name", type: "string" },
+      {
+        name: "icon",
+        label: "Icon",
+        type: "select",
+        options: [
+          "Building2", "Stethoscope", "FlaskConical", "Microscope", "Landmark", "Shield",
+          "Home", "BedDouble", "Heart", "Briefcase", "Ribbon", "Users", "Globe", "Activity",
+        ].map((v) => ({ label: v, value: v })),
+      },
+      { name: "headline", label: "Headline", type: "string" },
+      { name: "coreMessage", label: "Core Message", type: "text" },
+      { name: "summary", label: "Summary", type: "text" },
+      {
+        name: "outcomes",
+        label: "Outcomes",
+        type: "objectList",
+        itemType: "outcome",
+        itemFields: [
+          { name: "title", label: "Title" },
+          { name: "description", label: "Description", multiline: true },
+        ],
+      },
+      { name: "challenges", label: "Challenges (comma-separated)", type: "tags" },
+      { name: "includedPlatforms", label: "Included Platforms (comma-separated)", type: "tags" },
+      { name: "includedCapabilities", label: "Included Capabilities (comma-separated)", type: "tags" },
+      { name: "optionalCapabilities", label: "Optional Capabilities (comma-separated)", type: "tags" },
+      { name: "pricingDrivers", label: "Pricing Drivers (comma-separated)", type: "tags" },
+      {
+        name: "faqs",
+        label: "FAQs",
+        type: "objectList",
+        itemType: "solutionFaq",
+        itemFields: [
+          { name: "question", label: "Question" },
+          { name: "answer", label: "Answer", multiline: true },
+        ],
+      },
+      { name: "order", label: "Order", type: "number" },
       { name: "isPublished", label: "Published", type: "boolean" },
     ],
   },

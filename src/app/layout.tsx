@@ -3,6 +3,8 @@ import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
 import { Toaster } from "@/components/ui/toaster";
 import PostHogProvider from "@/components/PostHogProvider";
+import { client } from "@/sanity/client";
+import { allSolutionsQuery } from "@/sanity/queries";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://lhn.lifehealth.global";
 const ogImage = "https://media.base44.com/images/public/6a554b016ff6fa6eb6e63b81/7318e31b1_generated_45527cb5.png";
@@ -40,16 +42,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+type NavSolution = { name: string; slug: string };
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const solutions = await client.fetch<NavSolution[]>(allSolutionsQuery);
+
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <PostHogProvider>
-          <SiteChrome>{children}</SiteChrome>
+          <SiteChrome solutions={solutions}>{children}</SiteChrome>
           <Toaster />
         </PostHogProvider>
       </body>

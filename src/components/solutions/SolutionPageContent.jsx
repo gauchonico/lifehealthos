@@ -1,7 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckCircle, AlertCircle, ArrowLeft } from "lucide-react";
+import {
+  ArrowRight, CheckCircle, AlertCircle, ArrowLeft,
+  Building2, Stethoscope, FlaskConical, Microscope, Landmark, Shield,
+  Home, BedDouble, Heart, Briefcase, Ribbon, Users, Globe, Activity,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import CTABanner from "@/components/shared/CTABanner";
 import SectionHeading from "@/components/shared/SectionHeading";
@@ -11,7 +15,11 @@ import DashboardShowcase from "@/components/shared/DashboardShowcase";
 import { SOLUTION_DASHBOARDS } from "@/lib/solutionDashboards";
 import { Image } from "@/components/ui/image";
 import { base44Path } from "@/lib/base44";
-import { getSolutionBySlug } from "@/lib/solutionsData";
+
+const iconMap = {
+  Building2, Stethoscope, FlaskConical, Microscope, Landmark, Shield,
+  Home, BedDouble, Heart, Briefcase, Ribbon, Users, Globe, Activity,
+};
 
 const SOLUTION_MAPS = {
   "ministry-of-health": {
@@ -60,11 +68,17 @@ const SOLUTION_MAPS = {
   },
 };
 
-export default function SolutionPageContent({ slug }) {
-  const solution = getSolutionBySlug(slug);
-  const Icon = solution.icon;
+export default function SolutionPageContent({ solution }) {
+  const Icon = iconMap[solution.icon] || Building2;
   const solutionMap = SOLUTION_MAPS[solution.slug];
   const showLTCMap = Boolean(solutionMap);
+  const outcomes = solution.outcomes || [];
+  const challenges = solution.challenges || [];
+  const includedPlatforms = solution.includedPlatforms || [];
+  const includedCapabilities = solution.includedCapabilities || [];
+  const optionalCapabilities = solution.optionalCapabilities || [];
+  const pricingDrivers = solution.pricingDrivers || [];
+  const faqs = solution.faqs || [];
 
   return (
     <>
@@ -140,7 +154,7 @@ export default function SolutionPageContent({ slug }) {
             subtitle="Common pain points that LifeHealth addresses for your organization."
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {solution.challenges.map((challenge, i) => (
+            {challenges.map((challenge, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 10 }}
@@ -166,7 +180,7 @@ export default function SolutionPageContent({ slug }) {
             subtitle="Measurable outcomes that transform your organization."
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {solution.outcomes.map((outcome, i) => (
+            {outcomes.map((outcome, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 15 }}
@@ -193,7 +207,7 @@ export default function SolutionPageContent({ slug }) {
             <div>
               <h3 className="font-heading font-semibold text-lg text-navy-900 mb-6">Included Platforms</h3>
               <div className="space-y-3">
-                {solution.includedPlatforms.map((p) => (
+                {includedPlatforms.map((p) => (
                   <div key={p} className="flex items-center gap-3 p-3 rounded-lg bg-teal-50/50 border border-teal-100/50">
                     <CheckCircle className="w-5 h-5 text-teal-500 flex-shrink-0" />
                     <span className="text-sm font-medium text-navy-900">{p}</span>
@@ -204,18 +218,18 @@ export default function SolutionPageContent({ slug }) {
             <div>
               <h3 className="font-heading font-semibold text-lg text-navy-900 mb-6">Included Capabilities</h3>
               <div className="space-y-3 mb-8">
-                {solution.includedCapabilities.map((c) => (
+                {includedCapabilities.map((c) => (
                   <div key={c} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-100">
                     <CheckCircle className="w-5 h-5 text-teal-500 flex-shrink-0" />
                     <span className="text-sm font-medium text-navy-900">{c}</span>
                   </div>
                 ))}
               </div>
-              {solution.optionalCapabilities.length > 0 && (
+              {optionalCapabilities.length > 0 && (
                 <>
                   <h4 className="font-heading font-semibold text-sm text-slate-500 mb-4">Optional Capabilities</h4>
                   <div className="space-y-2">
-                    {solution.optionalCapabilities.map((c) => (
+                    {optionalCapabilities.map((c) => (
                       <div key={c} className="flex items-center gap-3 p-2.5 rounded-lg">
                         <CheckCircle className="w-4 h-4 text-slate-300 flex-shrink-0" />
                         <span className="text-sm text-slate-500">{c}</span>
@@ -238,7 +252,7 @@ export default function SolutionPageContent({ slug }) {
             subtitle="Pricing is based on your specific scale, configuration, and deployment needs."
           />
           <div className="grid sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-10">
-            {solution.pricingDrivers.map((d, i) => (
+            {pricingDrivers.map((d, i) => (
               <div key={i} className="flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-100">
                 <span className="w-8 h-8 rounded-lg bg-navy-900 text-white text-xs font-bold flex items-center justify-center flex-shrink-0">
                   {i + 1}
@@ -256,12 +270,12 @@ export default function SolutionPageContent({ slug }) {
       </section>
 
       {/* FAQ */}
-      {solution.faqs.length > 0 && (
+      {faqs.length > 0 && (
         <section className="section-padding bg-white">
           <div className="container-narrow">
             <SectionHeading badge="FAQ" title="Frequently asked questions" />
             <Accordion type="single" collapsible className="max-w-2xl mx-auto">
-              {solution.faqs.map((faq, i) => (
+              {faqs.map((faq, i) => (
                 <AccordionItem key={i} value={`faq-${i}`}>
                   <AccordionTrigger className="text-left font-heading font-semibold text-navy-900 text-sm">
                     {faq.question}

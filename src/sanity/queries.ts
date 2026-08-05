@@ -146,6 +146,70 @@ export const webinarBySlugQuery = groq`
   }
 `
 
+export const allNewsSlugsQuery = groq`
+  *[_type == "news" && isPublished == true && defined(slug.current)][].slug.current
+`
+
+export const allNewsQuery = groq`
+  *[_type == "news" && isPublished == true] | order(publishDate desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    coverImage,
+    tags,
+    publishDate
+  }
+`
+
+export const newsBySlugQuery = groq`
+  *[_type == "news" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    coverImage,
+    body,
+    tags,
+    publishDate
+  }
+`
+
+export const allSolutionSlugsQuery = groq`
+  *[_type == "solution" && isPublished == true && defined(slug.current)] | order(order asc) [].slug.current
+`
+
+export const allSolutionsQuery = groq`
+  *[_type == "solution" && isPublished == true] | order(order asc) {
+    _id,
+    name,
+    "slug": slug.current,
+    shortName,
+    icon,
+    summary
+  }
+`
+
+export const solutionBySlugQuery = groq`
+  *[_type == "solution" && slug.current == $slug][0] {
+    _id,
+    name,
+    "slug": slug.current,
+    shortName,
+    icon,
+    headline,
+    coreMessage,
+    summary,
+    outcomes,
+    challenges,
+    includedPlatforms,
+    includedCapabilities,
+    optionalCapabilities,
+    pricingDrivers,
+    faqs
+  }
+`
+
 export const siteSettingsQuery = groq`
   *[_type == "siteSettings"][0] {
     companyName,

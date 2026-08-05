@@ -55,6 +55,19 @@ export async function saveDocument(collectionKey: string, documentId: string | n
       if (raw !== "" && !Number.isNaN(Number(raw))) doc[field.name] = Number(raw);
       continue;
     }
+    if (field.type === "objectList") {
+      const raw = String(formData.get(field.name) || "[]");
+      let parsed: Record<string, string>[] = [];
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        parsed = [];
+      }
+      doc[field.name] = parsed
+        .filter((item) => Object.values(item).some((v) => String(v || "").trim()))
+        .map((item) => ({ ...item, _type: field.itemType, _key: crypto.randomUUID().replace(/-/g, "").slice(0, 12) }));
+      continue;
+    }
     const value = String(formData.get(field.name) || "").trim();
     if (value) doc[field.name] = value;
   }

@@ -4,11 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { solutions } from "@/lib/solutionsData";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44Path } from "@/lib/base44";
 
-const navItems = [
+const buildNavItems = (solutions) => [
   {
     label: "Solutions",
     children: solutions.map((s) => ({ label: s.name, href: `/solutions/${s.slug}` })),
@@ -86,11 +85,15 @@ function NavLink({ href, external, className, children }) {
   );
 }
 
-export default function Header() {
+/**
+ * @param {{ solutions?: { name: string, slug: string }[] }} props
+ */
+export default function Header({ solutions = [] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const dropdownRef = useRef(null);
   const pathname = usePathname();
+  const navItems = buildNavItems(solutions);
 
   useEffect(() => {
     setMobileOpen(false);

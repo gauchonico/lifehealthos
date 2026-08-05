@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { client } from "@/sanity/client";
-import { allPostSlugsQuery, allResourceSlugsQuery } from "@/sanity/queries";
-import { solutions } from "@/lib/solutionsData";
+import { allPostSlugsQuery, allResourceSlugsQuery, allNewsSlugsQuery, allSolutionSlugsQuery } from "@/sanity/queries";
 import { products } from "@/lib/productData";
 
 export const dynamic = "force-static";
@@ -36,17 +35,19 @@ const staticRoutes = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [postSlugs, resourceSlugs] = await Promise.all([
+  const [postSlugs, resourceSlugs, newsSlugs, solutionSlugs] = await Promise.all([
     client.fetch<string[]>(allPostSlugsQuery),
     client.fetch<string[]>(allResourceSlugsQuery),
+    client.fetch<string[]>(allNewsSlugsQuery),
+    client.fetch<string[]>(allSolutionSlugsQuery),
   ]);
 
   const entries: MetadataRoute.Sitemap = staticRoutes.map((path) => ({
     url: `${siteUrl}${path}`,
   }));
 
-  for (const solution of solutions) {
-    entries.push({ url: `${siteUrl}/solutions/${solution.slug}` });
+  for (const slug of solutionSlugs) {
+    entries.push({ url: `${siteUrl}/solutions/${slug}` });
   }
 
   for (const productId of Object.keys(products)) {
@@ -59,6 +60,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   for (const slug of resourceSlugs) {
     entries.push({ url: `${siteUrl}/resources/${slug}` });
+  }
+
+  for (const slug of newsSlugs) {
+    entries.push({ url: `${siteUrl}/resources/news/${slug}` });
   }
 
   return entries;

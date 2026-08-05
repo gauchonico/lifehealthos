@@ -1,3 +1,5 @@
+import { client } from "@/sanity/client";
+import { allSolutionsQuery } from "@/sanity/queries";
 import HeroSection from "@/components/home/HeroSection";
 import SolutionSelector from "@/components/home/SolutionSelector";
 import FeaturedSolution from "@/components/home/FeaturedSolution";
@@ -14,11 +16,13 @@ import LifeHealthTVSection from "@/components/home/LifeHealthTVSection";
 import ResourcesSection from "@/components/home/ResourcesSection";
 import CTABanner from "@/components/shared/CTABanner";
 
-export default function Home() {
+export default async function Home() {
+  const solutions = await client.fetch(allSolutionsQuery);
+
   return (
     <>
       <HeroSection />
-      <SolutionSelector />
+      <SolutionSelector solutions={solutions} />
       <FeaturedSolution />
       <HowItWorks />
       <XValidatorFeature />

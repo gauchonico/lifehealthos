@@ -1,6 +1,7 @@
 import type { CollectionConfig } from "@/lib/workspaceCollections";
 import { saveDocument } from "@/app/workspace/documentActions";
 import DeleteButton from "@/components/workspace/DeleteButton";
+import ObjectListField from "@/components/workspace/ObjectListField";
 import { portableTextToMarkdown } from "@/lib/portableText";
 
 type SanityDoc = Record<string, unknown>;
@@ -112,6 +113,18 @@ export default function DocumentForm({
                 className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
               />
             </div>
+          );
+        }
+
+        if (field.type === "objectList") {
+          return (
+            <ObjectListField
+              key={field.name}
+              name={field.name}
+              label={field.label}
+              itemFields={field.itemFields}
+              defaultValue={value}
+            />
           );
         }
 

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, FileStack, Video, Presentation, FolderOpen, HelpCircle, LogOut } from "lucide-react";
+import { LayoutDashboard, FileStack, Video, Presentation, FolderOpen, HelpCircle, Newspaper, Building2, LogOut } from "lucide-react";
 import { collections } from "@/lib/workspaceCollections";
 import { logout } from "@/app/workspace/actions";
 
@@ -7,6 +7,8 @@ const icons: Record<string, typeof FileStack> = {
   resources: FileStack,
   videos: Video,
   webinars: Presentation,
+  news: Newspaper,
+  solutions: Building2,
   faqs: HelpCircle,
   documents: FolderOpen,
 };

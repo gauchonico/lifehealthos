@@ -7,7 +7,15 @@ import Footer from "@/components/layout/Footer";
 // The /workspace admin tool is a separate surface — no marketing header/nav
 // or footer around it, and no top offset reserved for a fixed header that
 // isn't there.
-export default function SiteChrome({ children }: { children: React.ReactNode }) {
+type NavSolution = { name: string; slug: string };
+
+export default function SiteChrome({
+  children,
+  solutions = [],
+}: {
+  children: React.ReactNode;
+  solutions?: NavSolution[];
+}) {
   const pathname = usePathname();
   const isWorkspace = pathname?.startsWith("/workspace");
 
@@ -17,7 +25,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <Header />
+      <Header solutions={solutions} />
       <main className="flex-1 pt-16 lg:pt-20">{children}</main>
       <Footer />
     </>

@@ -1,7 +1,7 @@
 import { client } from "@/sanity/client";
-import { resourcesByTypeQuery } from "@/sanity/queries";
+import { allNewsQuery } from "@/sanity/queries";
 import CTABanner from "@/components/shared/CTABanner";
-import ResourceCardGrid from "@/components/resources/ResourceCardGrid";
+import NewsCardGrid from "@/components/resources/NewsCardGrid";
 import { pageMetadata } from "@/lib/seo";
 import type { Image as SanityImage } from "sanity";
 
@@ -11,18 +11,17 @@ export const metadata = pageMetadata({
   path: "/resources/news",
 });
 
-type ResourceListItem = {
+type NewsListItem = {
   _id: string;
   title: string;
   slug: string;
-  type: string;
-  summary?: string;
-  image?: SanityImage;
+  excerpt?: string;
+  coverImage?: SanityImage;
   publishDate?: string;
 };
 
 export default async function NewsPage() {
-  const resources = await client.fetch<ResourceListItem[]>(resourcesByTypeQuery, { type: "news" });
+  const news = await client.fetch<NewsListItem[]>(allNewsQuery);
 
   return (
     <>
@@ -41,7 +40,7 @@ export default async function NewsPage() {
 
       <section className="section-padding bg-white">
         <div className="container-wide">
-          <ResourceCardGrid resources={resources} />
+          <NewsCardGrid items={news} />
         </div>
       </section>
 

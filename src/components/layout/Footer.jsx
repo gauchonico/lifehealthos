@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { MessageCircle, Music2 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/BrandIcons";
-import { base44Path } from "@/lib/base44";
 
 const socialLinks = [
   { label: "X", href: "https://x.com/LifeHealth4W", icon: "X" },
@@ -99,7 +98,7 @@ export default function Footer() {
             <Link href="/privacy" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Terms of Use</Link>
             <Link href="/accessibility" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">Accessibility</Link>
-            <a href={base44Path("/admin")} className="text-xs text-slate-600 hover:text-teal-400 transition-colors">Admin</a>
+            <Link href="/workspace" className="text-xs text-slate-600 hover:text-teal-400 transition-colors">Admin</Link>
           </div>
         </div>
       </div>

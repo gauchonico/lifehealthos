@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import SiteChrome from "@/components/layout/SiteChrome";
 import { Toaster } from "@/components/ui/toaster";
 import PostHogProvider from "@/components/PostHogProvider";
 
@@ -50,9 +49,7 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <PostHogProvider>
-          <Header />
-          <main className="flex-1 pt-16 lg:pt-20">{children}</main>
-          <Footer />
+          <SiteChrome>{children}</SiteChrome>
           <Toaster />
         </PostHogProvider>
       </body>

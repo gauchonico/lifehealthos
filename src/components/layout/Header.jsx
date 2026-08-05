@@ -58,7 +58,7 @@ const navItems = [
     label: "Workspace",
     children: [
       { label: "AI Core", href: base44Path("/ai-core"), external: true },
-      { label: "Admin", href: base44Path("/admin"), external: true },
+      { label: "Admin", href: "/workspace" },
     ],
   },
   {

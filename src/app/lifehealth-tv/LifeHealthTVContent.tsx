@@ -6,8 +6,10 @@ import { Image } from "@/components/ui/image";
 import SectionHeading from "@/components/shared/SectionHeading";
 import CTABanner from "@/components/shared/CTABanner";
 import VideoRow from "@/components/lifehealth-tv/VideoRow";
+import TagVideoRow from "@/components/lifehealth-tv/TagVideoRow";
 import { YoutubeIcon } from "@/components/icons/BrandIcons";
 import { featuredVideo, videoSections } from "@/lib/lifeHealthTVVideos";
+import type { Image as SanityImage } from "sanity";
 
 const productions = [
   { title: "LifeHealth CTC", desc: "A look at the LifeHealth CTC programme.", duration: "0:59", id: "wkrhCaQwhyo" },
@@ -16,7 +18,30 @@ const productions = [
   { title: "Community Health Information Platform (CHIP)", desc: "An introduction to the Community Health Information Platform.", duration: "3:03", id: "Zi3b38FZgyA" },
 ];
 
-export default function LifeHealthTV() {
+type TVVideo = {
+  _id: string;
+  title: string;
+  slug: string;
+  youtubeUrl: string;
+  featuredImage?: SanityImage;
+  summary?: string;
+  tags?: string[];
+};
+
+function groupByTag(videos: TVVideo[]) {
+  const byTag = new Map<string, TVVideo[]>();
+  for (const video of videos) {
+    for (const tag of video.tags || []) {
+      if (!byTag.has(tag)) byTag.set(tag, []);
+      byTag.get(tag)!.push(video);
+    }
+  }
+  return Array.from(byTag.entries()).map(([tag, items]) => ({ tag, items }));
+}
+
+export default function LifeHealthTV({ videos = [] }: { videos?: TVVideo[] }) {
+  const tagSections = groupByTag(videos);
+
   return (
     <>
       <section className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-teal-50/40 pb-16 pt-28 lg:pb-20 lg:pt-36">
@@ -28,6 +53,17 @@ export default function LifeHealthTV() {
           <a href="https://www.youtube.com/@CTIAFRICA?sub_confirmation=1" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl bg-teal-600 px-7 py-4 font-semibold text-white shadow-lg shadow-teal-500/25 transition-colors hover:bg-teal-500"><YoutubeIcon className="h-5 w-5" />Subscribe on YouTube</a>
         </div>
       </section>
+
+      {tagSections.length > 0 ? (
+        <section className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-teal-50/40 py-16 lg:py-20">
+          <div className="relative container-wide">
+            <SectionHeading badge="Browse by Tag" title="Explore videos by topic" />
+            {tagSections.map(({ tag, items }) => (
+              <TagVideoRow key={tag} tag={tag} videos={items} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="section-padding bg-white">
         <div className="container-wide">

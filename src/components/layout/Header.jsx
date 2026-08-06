@@ -147,7 +147,7 @@ export default function Header({ solutions = [] }) {
                     >
                       {item.children.map((child) => (
                         <NavLink
-                          key={child.href}
+                          key={child.label}
                           href={child.href}
                           external={child.external}
                           className="block px-4 py-2.5 text-sm text-slate-600 hover:text-navy-900 hover:bg-slate-50 transition-colors"
@@ -231,7 +231,7 @@ function MobileNavItem({ item }) {
             <div className="pb-3 pl-4 space-y-1">
               {item.children.map((child) => (
                 <NavLink
-                  key={child.href}
+                  key={child.label}
                   href={child.href}
                   external={child.external}
                   className="block py-2 text-sm text-slate-500 hover:text-teal-600"

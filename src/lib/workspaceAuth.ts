@@ -1,7 +1,8 @@
 // Email+password auth for /workspace, in two tiers:
 //
-// - Admin: one fixed account (WORKSPACE_ADMIN_EMAIL / WORKSPACE_ADMIN_PASSWORD
-//   env vars), logs in directly with a real password — no email round-trip.
+// - Admin: a fixed list of accounts (WORKSPACE_ADMINS env var — see
+//   getAdmins() below), each logging in directly with their own real
+//   password — no email round-trip.
 // - Members: anyone else must first have an `accessRequest` Sanity doc with
 //   status "approved" (set by the admin from inside /workspace) before they
 //   can request a one-time login code by email.
@@ -78,22 +79,46 @@ async function verifyToken(token: string, purpose: TokenPayload["purpose"]): Pro
   }
 }
 
-export function getAdminEmail(): string {
-  return (process.env.WORKSPACE_ADMIN_EMAIL || "").trim().toLowerCase();
+// WORKSPACE_ADMINS holds every admin account as "email:password" pairs,
+// comma-separated, e.g.:
+//   WORKSPACE_ADMINS=alice@example.com:pw1,bob@example.com:pw2
+// Passwords can't contain a comma or colon — keep them plain alphanumeric.
+// Falls back to the older single-account WORKSPACE_ADMIN_EMAIL /
+// WORKSPACE_ADMIN_PASSWORD pair if WORKSPACE_ADMINS isn't set, so existing
+// deployments don't need to migrate immediately.
+function getAdmins(): { email: string; password: string }[] {
+  const list = process.env.WORKSPACE_ADMINS;
+  if (list) {
+    return list
+      .split(",")
+      .map((entry) => {
+        const [email, password] = entry.split(":");
+        return { email: (email || "").trim().toLowerCase(), password: (password || "").trim() };
+      })
+      .filter((a) => a.email && a.password);
+  }
+
+  const legacyEmail = process.env.WORKSPACE_ADMIN_EMAIL;
+  const legacyPassword = process.env.WORKSPACE_ADMIN_PASSWORD;
+  if (legacyEmail && legacyPassword) {
+    return [{ email: legacyEmail.trim().toLowerCase(), password: legacyPassword.trim() }];
+  }
+
+  return [];
 }
 
 export function isAdminEmail(email: string): boolean {
-  const adminEmail = getAdminEmail();
-  return !!adminEmail && email.trim().toLowerCase() === adminEmail;
+  const target = email.trim().toLowerCase();
+  return getAdmins().some((a) => a.email === target);
 }
 
 // Constant-time-ish comparison: HMAC both sides first so the compared
 // strings are fixed-length digests rather than the raw, variable-length
 // secrets — avoids a naive `===` leaking length/prefix via timing.
-export async function verifyAdminPassword(password: string): Promise<boolean> {
-  const expected = process.env.WORKSPACE_ADMIN_PASSWORD;
-  if (!expected) return false;
-  const [a, b] = await Promise.all([hmac(password, getSecret()), hmac(expected, getSecret())]);
+export async function verifyAdminPassword(email: string, password: string): Promise<boolean> {
+  const admin = getAdmins().find((a) => a.email === email.trim().toLowerCase());
+  if (!admin) return false;
+  const [a, b] = await Promise.all([hmac(password, getSecret()), hmac(admin.password, getSecret())]);
   return a === b;
 }
 

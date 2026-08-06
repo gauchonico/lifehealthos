@@ -33,7 +33,7 @@ on Create/Update/Delete for all document types. After that, publishing in Sanity
 A private, sidebar CMS for Resources/Videos/Webinars/News/Solutions/FAQs/Documents that writes to Sanity directly (via a server-only write token), without needing Sanity Studio access.
 
 **Access model — two tiers, approval-gated:**
-- **Admin** (`WORKSPACE_ADMIN_EMAIL` / `WORKSPACE_ADMIN_PASSWORD`) logs in directly at `/workspace/login` with a real password — no email round-trip. The admin also gets an **Access Requests** page in the sidebar for approving/denying everyone else.
+- **Admins** (`WORKSPACE_ADMINS` — one or more accounts) log in directly at `/workspace/login` with their own real password — no email round-trip. Any admin gets an **Access Requests** page in the sidebar for approving/denying everyone else.
 - **Everyone else** submits their email at `/workspace/request`, which creates a pending `accessRequest` document in Sanity. Nothing is sent until the admin approves it from `/workspace/access-requests` — approving immediately emails a signed, self-verifying one-time code (valid 30 min, via Resend), so there's no second round trip for the requester. (Requesting again later, once approved, also re-sends a fresh code — handy if the first one expired.) That code is entered as the "password" at `/workspace/login` to get a session cookie (valid 7 days).
 - `src/proxy.ts` gates every `/workspace/*` route on having *any* valid session; the Access Requests page additionally checks for the `admin` role itself (both in the page and in its server actions — never relying on the sidebar link being hidden alone).
 
@@ -51,7 +51,6 @@ The one-time codes and session cookies are still stateless — HMAC-signed over 
 | `SANITY_WRITE_TOKEN` | Server-only. Sanity manage → API → Tokens → create one with **Editor** permission. Powers `/workspace` writes. Never expose with a `NEXT_PUBLIC_` prefix. |
 | `SANITY_REVALIDATE_SECRET` | Shared secret for the Sanity webhook → `/api/revalidate` |
 | `WORKSPACE_AUTH_SECRET` | Long random string signing workspace access/session tokens |
-| `WORKSPACE_ADMIN_EMAIL` | The one account that logs in directly with a password, and can approve/deny everyone else |
-| `WORKSPACE_ADMIN_PASSWORD` | The admin's login password (compared via an HMAC'd constant-time-ish check, not stored anywhere else) |
+| `WORKSPACE_ADMINS` | Comma-separated `email:password` pairs — one per admin account, each logging in directly and able to approve/deny everyone else. Passwords can't contain a comma or colon. Compared via an HMAC'd constant-time-ish check, not stored anywhere else. |
 | `RESEND_API_KEY` | Sends the workspace one-time-password email |
 | `WORKSPACE_EMAIL_FROM` | Optional. Defaults to Resend's shared test sender; set once a sending domain is verified in Resend |

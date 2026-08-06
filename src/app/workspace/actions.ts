@@ -59,7 +59,7 @@ export async function login(formData: FormData) {
   }
 
   if (isAdminEmail(email)) {
-    if (!(await verifyAdminPassword(password))) {
+    if (!(await verifyAdminPassword(email, password))) {
       redirect("/workspace/login?error=invalid");
     }
     const session = await createSessionToken(email, "admin");

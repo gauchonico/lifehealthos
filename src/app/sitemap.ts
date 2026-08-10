@@ -31,6 +31,7 @@ const staticRoutes = [
   "/privacy-mobile",
   "/privacy-passport-mobile",
   "/account-deletion",
+  "/legal",
   "/terms",
   "/accessibility",
   "/terms-and-conditions-nexus-and-passport",

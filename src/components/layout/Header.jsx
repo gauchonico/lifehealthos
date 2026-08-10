@@ -42,6 +42,7 @@ const buildNavItems = (solutions) => [
       { label: "Videos & Webinars", href: "/resources/videos-webinars" },
       { label: "News", href: "/resources/news" },
       { label: "FAQ", href: "/faq" },
+      { label: "Legal", href: "/legal" },
     ],
   },
   {

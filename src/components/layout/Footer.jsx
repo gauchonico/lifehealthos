@@ -36,6 +36,7 @@ const footerLinks = {
     { label: "Contact", href: "/contact" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Use", href: "/terms" },
+    { label: "Account Deletion", href: "/account-deletion" },
   ],
 };
 

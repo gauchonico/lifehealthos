@@ -2,6 +2,7 @@ import type { CollectionConfig } from "@/lib/workspaceCollections";
 import { saveDocument } from "@/app/workspace/documentActions";
 import DeleteButton from "@/components/workspace/DeleteButton";
 import ObjectListField from "@/components/workspace/ObjectListField";
+import SubmitButton from "@/components/workspace/SubmitButton";
 import { portableTextToMarkdown } from "@/lib/portableText";
 
 type SanityDoc = Record<string, unknown>;
@@ -169,9 +170,7 @@ export default function DocumentForm({
       })}
 
       <div className="flex items-center justify-between border-t border-slate-100 pt-6">
-        <button type="submit" className="rounded-xl bg-teal-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-teal-600">
-          Save
-        </button>
+        <SubmitButton />
         {documentId ? <DeleteButton collectionKey={collectionKey} documentId={documentId} /> : null}
       </div>
     </form>

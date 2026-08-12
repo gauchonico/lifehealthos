@@ -1,7 +1,7 @@
 import { client } from "@/sanity/client";
 import { allVideosQuery } from "@/sanity/queries";
 import { pageMetadata } from "@/lib/seo";
-import LifeHealthTVContent from "./LifeHealthTVContent";
+import LifeHealthTV2Content from "./LifeHealthTV2Content";
 import type { Image as SanityImage } from "sanity";
 
 export const metadata = pageMetadata({
@@ -20,8 +20,8 @@ export type TVVideo = {
   tags?: string[];
 };
 
-export default async function LifeHealthTVPage() {
+export default async function LifeHealthTV2Page() {
   const videos = await client.fetch<TVVideo[]>(allVideosQuery);
 
-  return <LifeHealthTVContent videos={videos} />;
+  return <LifeHealthTV2Content videos={videos} />;
 }

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { ArrowUpRight, CalendarCheck, Video, Fingerprint, Stethoscope, Microscope, BarChart3, PieChart } from "lucide-react";
 import { motion } from "framer-motion";
-import { base44Path } from "@/lib/base44";
 
 const GREEN = "#1E7A46";
 const GREEN_DARK = "#175C36";
@@ -320,9 +319,9 @@ export default function Home2Content() {
             >
               Let&apos;s Talk <ArrowUpRight className="h-4 w-4" />
             </Link>
-            <a href={base44Path("/ai-core")} className="inline-flex items-center gap-1.5 text-sm font-semibold text-white/90 hover:text-white">
+            <Link href="/products/vima" className="inline-flex items-center gap-1.5 text-sm font-semibold text-white/90 hover:text-white">
               VIMA — Your AI-Powered Clinical Research Support <ArrowUpRight className="h-3.5 w-3.5" />
-            </a>
+            </Link>
           </div>
         </div>
 

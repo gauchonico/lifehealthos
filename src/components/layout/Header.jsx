@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { base44Path } from "@/lib/base44";
 
 const buildNavItems = (solutions) => [
   {
@@ -56,10 +55,7 @@ const buildNavItems = (solutions) => [
   },
   {
     label: "Workspace",
-    children: [
-      { label: "AI Core", href: base44Path("/ai-core"), external: true },
-      { label: "Admin", href: "/workspace" },
-    ],
+    children: [{ label: "Admin", href: "/workspace" }],
   },
   {
     label: "Company",

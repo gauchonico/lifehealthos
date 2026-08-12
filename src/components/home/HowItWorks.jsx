@@ -10,7 +10,7 @@ const steps = [
   { icon: Shield, label: "Patient", platform: "Passport", description: "Patients manage their health records, consent, and care access.", to: base44Path("/passport-preview"), external: true, tone: "bg-brandred-50 text-brandred-500" },
   { icon: Stethoscope, label: "Provider", platform: "Nexus", description: "Clinicians deliver care with connected workflows and records.", to: "/platform", tone: "bg-sky-50 text-sky-600" },
   { icon: FlaskConical, label: "Laboratory", platform: "LifeLab", description: "Laboratories process orders, track specimens, and deliver results.", to: "/platform", tone: "bg-amber-50 text-amber-600" },
-  { icon: Sparkles, label: "AI (VIMA)", platform: "VIMA", description: "AI provides real-time clinical insights, automation, and support.", to: base44Path("/ai-core"), external: true, tone: "bg-violet-50 text-violet-600" },
+  { icon: Sparkles, label: "AI (VIMA)", platform: "VIMA", description: "AI provides real-time clinical insights, automation, and support.", to: "/products/vima", tone: "bg-violet-50 text-violet-600" },
   { icon: BarChart3, label: "Analytics", platform: "LifeData", description: "Decision-makers access dashboards, reports, and population intelligence.", to: "/data-analytics", tone: "bg-emerald-50 text-emerald-600" },
   { icon: Heart, label: "Better Outcomes", platform: "LifeHealth OS", description: "Organizations and governments improve healthcare delivery and outcomes.", to: "/solutions/hospitals", tone: "bg-rose-50 text-rose-600" },
 ];

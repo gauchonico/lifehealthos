@@ -37,7 +37,7 @@ export default function WelcomeGateway() {
             <UserPlus className="w-3.5 h-3.5" /> Sign Up
           </a>
         </div>
-        <a href="https://healthadmin.lifehealth.app" target="_blank" rel="noreferrer" className="block mt-3 text-center text-[11px] text-slate-400 hover:text-brandred-500 transition-colors">
+        <a href="https://nexus.lifehealth.app/" target="_blank" rel="noreferrer" className="block mt-3 text-center text-[11px] text-slate-400 hover:text-brandred-500 transition-colors">
           Provider? Go to the Admin Portal →
         </a>
       </div>

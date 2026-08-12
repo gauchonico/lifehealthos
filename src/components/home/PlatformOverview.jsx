@@ -16,7 +16,7 @@ const platformsList = [
   { name: "LifeResearch", user: "Researchers", purpose: "Clinical trial management, participant engagement, and registries.", iconName: "Microscope", to: "/solutions/clinical-research", tone: "bg-pink-50 text-pink-600" },
   { name: "LifeData", user: "Decision Makers", purpose: "Analytics, dashboards, and population health intelligence.", iconName: "BarChart3", to: "/data-analytics", tone: "bg-emerald-50 text-emerald-600" },
   { name: "LifeCommerce", user: "Payers & Partners", purpose: "Health marketplace and commercial services.", iconName: "ShoppingBag", to: "/pricing", tone: "bg-orange-50 text-orange-600" },
-  { name: "VIMA", user: "All Users", purpose: "AI assistant for clinical support, automation, and insights.", iconName: "Sparkles", to: base44Path("/ai-core"), external: true, tone: "bg-indigo-50 text-indigo-600" },
+  { name: "VIMA", user: "All Users", purpose: "AI assistant for clinical support, automation, and insights.", iconName: "Sparkles", to: "/products/vima", tone: "bg-indigo-50 text-indigo-600" },
 ];
 
 export default function PlatformOverview() {

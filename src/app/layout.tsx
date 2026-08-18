@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SiteChrome from "@/components/layout/SiteChrome";
+import InitialLoadOverlay from "@/components/layout/InitialLoadOverlay";
 import { Toaster } from "@/components/ui/toaster";
 import PostHogProvider from "@/components/PostHogProvider";
 import { client } from "@/sanity/client";
@@ -52,6 +53,7 @@ export default async function RootLayout({
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
         <PostHogProvider>
+          <InitialLoadOverlay />
           <SiteChrome solutions={solutions}>{children}</SiteChrome>
           <Toaster />
         </PostHogProvider>

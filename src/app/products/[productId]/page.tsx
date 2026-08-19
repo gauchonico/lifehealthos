@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import ProductHero from "@/components/products/ProductHero";
 import PassportHero from "@/components/products/PassportHero";
 import LifeLabHero from "@/components/products/LifeLabHero";
+import NexusHero from "@/components/products/NexusHero";
+import VimaHero from "@/components/products/VimaHero";
 import ProductCapabilityGrid from "@/components/products/ProductCapabilityGrid";
 import ProductConnections from "@/components/products/ProductConnections";
 import CTABanner from "@/components/shared/CTABanner";
@@ -42,6 +44,8 @@ export default async function ProductPage({
   const customHeroes: Record<string, () => React.JSX.Element> = {
     passport: PassportHero,
     lifelab: LifeLabHero,
+    nexus: NexusHero,
+    vima: VimaHero,
   };
   const CustomHero = customHeroes[productId];
 

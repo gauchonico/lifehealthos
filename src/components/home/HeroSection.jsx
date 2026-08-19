@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Play, FileCheck, FlaskConical, Users, Heart, Smartphone } from "lucide-react";
+import { Play, FileCheck, FlaskConical, Users, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import WelcomeGateway from "@/components/home/WelcomeGateway";
 
@@ -9,6 +9,19 @@ const floatingCards = [
   { icon: FileCheck, label: "Patient Record", sub: "Secure & shared", x: "-left-6", y: "top-10" },
   { icon: FlaskConical, label: "Lab Result", sub: "Ready in minutes", x: "-right-4", y: "top-1/3" },
   { icon: Users, label: "Care Team", sub: "Connected", x: "left-1/4", y: "-bottom-6" },
+];
+
+const storeLinks = [
+  {
+    icon: "/playstore.svg",
+    store: "Download on Google Play",
+    href: "https://play.google.com/store/apps/details?id=com.mylifehealthwallet.mylifehealthwallet",
+  },
+  {
+    icon: "/game.svg",
+    store: "Download on the App Store",
+    href: "https://apps.apple.com/us/app/my-lifehealth-wallet/id6502951710",
+  },
 ];
 
 const pathChips = [
@@ -50,7 +63,23 @@ export default function HeroSection() {
 
             <WelcomeGateway />
 
-            <a href="https://play.google.com/store/apps/details?id=com.mylifehealthwallet.mylifehealthwallet" target="_blank" rel="noreferrer" className="mb-5 inline-flex items-center gap-3 rounded-xl border border-teal-200 bg-white px-4 py-3 text-sm shadow-sm transition-colors hover:border-teal-400"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50"><Smartphone className="h-5 w-5 text-teal-600" /></span><span><span className="block text-xs text-slate-500">LifeHealth Passport</span><span className="font-semibold text-navy-900">Download on Google Play</span></span></a>
+            <div className="mb-5 flex flex-nowrap items-center gap-3">
+              {storeLinks.map(({ icon, store, href }) => (
+                <a
+                  key={store}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex flex-1 items-center gap-2.5 rounded-xl border border-teal-200 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors hover:border-teal-400 sm:flex-initial sm:gap-3 sm:px-4 sm:py-3"
+                >
+                  <img src={icon} alt="" className="h-8 w-8 shrink-0 sm:h-9 sm:w-9" />
+                  <span className="min-w-0">
+                    <span className="block text-[11px] text-slate-500 sm:text-xs">LifeHealth Passport</span>
+                    <span className="block truncate font-semibold text-navy-900">{store}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
 
             <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-white/80 bg-white/70 p-3 shadow-sm">
               <span className="mr-1 text-xs font-semibold uppercase tracking-wider text-teal-700">Find Your Path</span>

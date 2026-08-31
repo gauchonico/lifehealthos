@@ -17,6 +17,8 @@ export type CollectionConfig = {
   titleField?: string;
   /** Whether to auto-generate a slug from titleField on create. Defaults to true. */
   hasSlug?: boolean;
+  /** Name of a "select" field to group the list view into sections by, e.g. "category". */
+  groupByField?: string;
 };
 
 export const collections: CollectionConfig[] = [
@@ -164,6 +166,30 @@ export const collections: CollectionConfig[] = [
       { name: "category", label: "Category", type: "string" },
       { name: "publishDate", label: "Publish Date", type: "date" },
       { name: "isPublished", label: "Published", type: "boolean" },
+    ],
+  },
+  {
+    key: "quickLinks",
+    sanityType: "quickLink",
+    label: "Quick Links",
+    hasSlug: false,
+    groupByField: "category",
+    fields: [
+      { name: "title", label: "Title", type: "string", required: true },
+      { name: "url", label: "URL", type: "url", required: true },
+      { name: "description", label: "Description", type: "text" },
+      {
+        name: "category",
+        label: "Category",
+        type: "select",
+        options: [
+          { label: "Dashboard", value: "dashboard" },
+          { label: "Demo", value: "demo" },
+          { label: "Tool", value: "tool" },
+          { label: "Other", value: "other" },
+        ],
+      },
+      { name: "order", label: "Order", type: "number" },
     ],
   },
 ];

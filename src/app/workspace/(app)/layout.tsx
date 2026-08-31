@@ -1,19 +1,8 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
-import { LayoutDashboard, FileStack, Video, Presentation, FolderOpen, HelpCircle, Newspaper, Building2, ShieldCheck, LogOut } from "lucide-react";
-import { collections } from "@/lib/workspaceCollections";
+import { LogOut } from "lucide-react";
+import WorkspaceNav from "@/components/workspace/WorkspaceNav";
 import { logout } from "@/app/workspace/actions";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/workspaceAuth";
-
-const icons: Record<string, typeof FileStack> = {
-  resources: FileStack,
-  videos: Video,
-  webinars: Presentation,
-  news: Newspaper,
-  solutions: Building2,
-  faqs: HelpCircle,
-  documents: FolderOpen,
-};
 
 export const metadata = { title: "Workspace", robots: { index: false, follow: false } };
 // Always render fresh: this reflects live (including unpublished) Sanity
@@ -40,31 +29,7 @@ export default async function WorkspaceAppLayout({ children }: { children: React
           ) : null}
         </div>
 
-        <nav className="flex-1 space-y-1 px-3 py-4">
-          <Link href="/workspace" className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-navy-900">
-            <LayoutDashboard className="h-4 w-4" /> Dashboard
-          </Link>
-          {collections.map((c) => {
-            const Icon = icons[c.key] ?? FileStack;
-            return (
-              <Link
-                key={c.key}
-                href={`/workspace/${c.key}`}
-                className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-navy-900"
-              >
-                <Icon className="h-4 w-4" /> {c.label}
-              </Link>
-            );
-          })}
-          {isAdmin ? (
-            <Link
-              href="/workspace/access-requests"
-              className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-navy-900"
-            >
-              <ShieldCheck className="h-4 w-4" /> Access Requests
-            </Link>
-          ) : null}
-        </nav>
+        <WorkspaceNav isAdmin={isAdmin} />
 
         <form action={logout} className="border-t border-slate-100 px-3 py-4">
           <button type="submit" className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-red-600">

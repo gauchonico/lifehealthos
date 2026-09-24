@@ -3,6 +3,7 @@ import { saveDocument } from "@/app/workspace/documentActions";
 import DeleteButton from "@/components/workspace/DeleteButton";
 import ObjectListField from "@/components/workspace/ObjectListField";
 import SubmitButton from "@/components/workspace/SubmitButton";
+import VideoUploadField from "@/components/workspace/VideoUploadField";
 import { portableTextToMarkdown } from "@/lib/portableText";
 
 type SanityDoc = Record<string, unknown>;
@@ -125,6 +126,17 @@ export default function DocumentForm({
               label={field.label}
               itemFields={field.itemFields}
               defaultValue={value}
+            />
+          );
+        }
+
+        if (field.type === "videoFile") {
+          return (
+            <VideoUploadField
+              key={field.name}
+              name={field.name}
+              label={field.label}
+              defaultValue={typeof value === "string" ? value : ""}
             />
           );
         }

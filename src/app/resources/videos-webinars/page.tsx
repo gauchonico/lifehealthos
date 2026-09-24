@@ -17,10 +17,47 @@ type MediaItem = {
   _id: string;
   title: string;
   slug: string;
-  youtubeUrl: string;
+  youtubeUrl?: string;
+  videoFileUrl?: string;
   featuredImage?: SanityImage;
   summary?: string;
 };
+
+function MediaCard({ item }: { item: MediaItem }) {
+  const thumbnail = (
+    <div className="relative aspect-video overflow-hidden rounded-xl bg-slate-200">
+      {item.featuredImage ? (
+        <Image
+          src={urlFor(item.featuredImage).width(500).height(280).url()}
+          alt=""
+          width={500}
+          height={280}
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+      ) : null}
+      <span className="absolute inset-0 flex items-center justify-center bg-navy-900/0 transition-colors group-hover:bg-navy-900/30">
+        <Play className="h-10 w-10 fill-white text-white opacity-0 transition-opacity group-hover:opacity-100" />
+      </span>
+    </div>
+  );
+
+  return (
+    <li>
+      {item.videoFileUrl ? (
+        <details className="group/details">
+          <summary className="cursor-pointer list-none">{thumbnail}</summary>
+          <video src={item.videoFileUrl} controls className="mt-3 w-full rounded-xl bg-black" />
+        </details>
+      ) : (
+        <a href={item.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
+          {thumbnail}
+        </a>
+      )}
+      <h3 className="mt-3 font-heading font-semibold text-navy-900 group-hover:text-teal-600">{item.title}</h3>
+      {item.summary ? <p className="mt-1 text-sm text-slate-500">{item.summary}</p> : null}
+    </li>
+  );
+}
 
 function MediaGrid({ items, emptyMessage }: { items: MediaItem[]; emptyMessage: string }) {
   if (items.length === 0) {
@@ -30,26 +67,7 @@ function MediaGrid({ items, emptyMessage }: { items: MediaItem[]; emptyMessage: 
   return (
     <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {items.map((item) => (
-        <li key={item._id}>
-          <a href={item.youtubeUrl} target="_blank" rel="noopener noreferrer" className="group block">
-            <div className="relative aspect-video overflow-hidden rounded-xl bg-slate-200">
-              {item.featuredImage ? (
-                <Image
-                  src={urlFor(item.featuredImage).width(500).height(280).url()}
-                  alt=""
-                  width={500}
-                  height={280}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              ) : null}
-              <span className="absolute inset-0 flex items-center justify-center bg-navy-900/0 transition-colors group-hover:bg-navy-900/30">
-                <Play className="h-10 w-10 fill-white text-white opacity-0 transition-opacity group-hover:opacity-100" />
-              </span>
-            </div>
-            <h3 className="mt-3 font-heading font-semibold text-navy-900 group-hover:text-teal-600">{item.title}</h3>
-            {item.summary ? <p className="mt-1 text-sm text-slate-500">{item.summary}</p> : null}
-          </a>
-        </li>
+        <MediaCard key={item._id} item={item} />
       ))}
     </ul>
   );

@@ -54,3 +54,30 @@ The one-time codes and session cookies are still stateless — HMAC-signed over 
 | `WORKSPACE_ADMINS` | Comma-separated `email:password` pairs — one per admin account, each logging in directly and able to approve/deny everyone else. Passwords can't contain a comma or colon. Compared via an HMAC'd constant-time-ish check, not stored anywhere else. |
 | `RESEND_API_KEY` | Sends the workspace one-time-password email |
 | `WORKSPACE_EMAIL_FROM` | Optional. Defaults to Resend's shared test sender; set once a sending domain is verified in Resend |
+| `HOSTINGER_UPLOAD_URL` | URL of `hostinger/upload.php` once uploaded to Hostinger, e.g. `https://media.lifehealth.global/upload.php` |
+| `HOSTINGER_PUBLIC_BASE_URL` | Public URL of the folder `upload.php` lives in, e.g. `https://media.lifehealth.global` |
+| `VIDEO_UPLOAD_SECRET` | Long random string signing video upload tokens. Must match `UPLOAD_SECRET` in `upload.php` |
+
+## Video uploads (Hostinger)
+
+In `/workspace/videos`, a video can use either a YouTube URL or an uploaded file. Uploaded files are stored on Hostinger, not in Sanity or on Vercel.
+
+Vercel rejects request bodies over ~4.5MB, so the file never passes through this app. Instead:
+
+1. Picking a file calls `createVideoUpload` (`src/app/workspace/videoUploadActions.ts`), which checks the workspace session and returns a short-lived, HMAC-signed token naming the final filename and size.
+2. The browser sends the file in 8MB chunks directly to `hostinger/upload.php`, which checks the token on every chunk and assembles the file in its folder.
+3. The finished public URL goes into a hidden form field, and **Save** stores it as `videoFileUrl` on the Sanity `video` document.
+
+**One-time Hostinger setup:**
+
+1. Generate a secret (`openssl rand -hex 32`) and set it as `VIDEO_UPLOAD_SECRET` on Vercel (and in `.env.local`).
+2. Edit `hostinger/upload.php`: paste the same value into `UPLOAD_SECRET`, and check `ALLOWED_ORIGINS` lists every domain the workspace is used from.
+3. The main domain points to Vercel, so the videos live on a subdomain that points to Hostinger instead:
+   - In hPanel → Domains → Subdomains, create `media.lifehealth.global`. Note the folder it creates (e.g. `public_html/media`).
+   - Add a DNS `A` record for `media` pointing to the Hostinger server IP (hPanel → Hosting → Details), wherever the domain's DNS is managed (Vercel → Domains, if its nameservers are Vercel's). Leave the root/`www` records pointing at Vercel.
+   - Once it resolves, turn on SSL for the subdomain in hPanel → Security → SSL.
+   - Upload `upload.php` into the subdomain's folder with File Manager.
+4. In hPanel → Advanced → PHP Configuration, make sure the PHP version is 8.0+ and `upload_max_filesize` and `post_max_size` are at least `16M`.
+5. Set `HOSTINGER_UPLOAD_URL` (e.g. `https://media.lifehealth.global/upload.php`) and `HOSTINGER_PUBLIC_BASE_URL` (e.g. `https://media.lifehealth.global`) on Vercel, then redeploy.
+
+Removing a video in the workspace only clears it from the Sanity document; the file stays on Hostinger until deleted in File Manager.

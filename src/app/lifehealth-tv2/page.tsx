@@ -14,7 +14,8 @@ export type TVVideo = {
   _id: string;
   title: string;
   slug: string;
-  youtubeUrl: string;
+  youtubeUrl?: string;
+  videoFileUrl?: string;
   featuredImage?: SanityImage;
   summary?: string;
   tags?: string[];

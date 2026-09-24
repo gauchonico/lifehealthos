@@ -5,6 +5,8 @@ export type FieldConfig =
   | { name: string; label: string; type: "select"; options: { label: string; value: string }[]; required?: boolean }
   | { name: string; label: string; type: "boolean" }
   | { name: string; label: string; type: "image" | "file"; required?: boolean }
+  /** A video file uploaded from the browser to Hostinger (see VideoUploadField); stored on the document as a plain URL string field. */
+  | { name: string; label: string; type: "videoFile" }
   /** A repeatable list of small objects, e.g. { title, description } pairs. Stored as a Sanity object array with `_type: itemType`. */
   | { name: string; label: string; type: "objectList"; itemType: string; itemFields: ObjectListItemField[] };
 
@@ -54,7 +56,8 @@ export const collections: CollectionConfig[] = [
     label: "Videos",
     fields: [
       { name: "title", label: "Title", type: "string", required: true },
-      { name: "youtubeUrl", label: "YouTube URL", type: "url", required: true },
+      { name: "youtubeUrl", label: "YouTube URL (leave empty if uploading a file below)", type: "url" },
+      { name: "videoFileUrl", label: "Or Upload a Video File", type: "videoFile" },
       { name: "featuredImage", label: "Featured Image", type: "image", required: true },
       { name: "summary", label: "Summary", type: "text" },
       { name: "tags", label: "Tags (comma-separated)", type: "tags" },

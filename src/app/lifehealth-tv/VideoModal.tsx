@@ -5,20 +5,27 @@ import { X } from "lucide-react";
 
 export default function VideoModal({
   videoId,
+  fileUrl,
   title,
   onClose,
 }: {
   videoId: string | null;
+  /** An uploaded video file; takes precedence over videoId. */
+  fileUrl?: string;
   title?: string;
   onClose: () => void;
 }) {
   return (
-    <Dialog.Root open={Boolean(videoId)} onOpenChange={(open) => !open && onClose()}>
+    <Dialog.Root open={Boolean(videoId || fileUrl)} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <Dialog.Content className="fixed left-1/2 top-1/2 z-50 w-[92vw] max-w-4xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl bg-black shadow-2xl outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95">
           <Dialog.Title className="sr-only">{title || "Video player"}</Dialog.Title>
-          {videoId ? (
+          {fileUrl ? (
+            <div className="aspect-video w-full">
+              <video key={fileUrl} src={fileUrl} controls autoPlay playsInline className="h-full w-full" />
+            </div>
+          ) : videoId ? (
             <div className="aspect-video w-full">
               <iframe
                 key={videoId}

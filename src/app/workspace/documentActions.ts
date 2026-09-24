@@ -6,6 +6,7 @@ import { writeClient } from "@/sanity/writeClient";
 import { getCollection } from "@/lib/workspaceCollections";
 import { slugify } from "@/lib/slugify";
 import { markdownToPortableText } from "@/lib/portableText";
+import { isUploadedVideoUrl } from "@/lib/videoUpload";
 
 async function uploadFile(file: File) {
   const arrayBuffer = await file.arrayBuffer();
@@ -21,6 +22,7 @@ export async function saveDocument(collectionKey: string, documentId: string | n
   if (!collection) throw new Error("Unknown collection");
 
   const doc: Record<string, unknown> = { _type: collection.sanityType };
+  const unsetFields: string[] = [];
 
   for (const field of collection.fields) {
     if (field.type === "boolean") {
@@ -50,6 +52,19 @@ export async function saveDocument(collectionKey: string, documentId: string | n
       }
       continue;
     }
+    if (field.type === "videoFile") {
+      // The browser has already uploaded the file to Hostinger (see
+      // VideoUploadField); this is just its URL. Unlike other fields, blank
+      // here means "removed", since the input is pre-filled with the current URL.
+      const url = String(formData.get(field.name) || "").trim();
+      if (url) {
+        if (!isUploadedVideoUrl(url)) throw new Error("Invalid uploaded video URL");
+        doc[field.name] = url;
+      } else {
+        unsetFields.push(field.name);
+      }
+      continue;
+    }
     if (field.type === "number") {
       const raw = String(formData.get(field.name) || "").trim();
       if (raw !== "" && !Number.isNaN(Number(raw))) doc[field.name] = Number(raw);
@@ -74,7 +89,9 @@ export async function saveDocument(collectionKey: string, documentId: string | n
 
   let id = documentId;
   if (id) {
-    await writeClient.patch(id).set(doc).commit();
+    const patch = writeClient.patch(id).set(doc);
+    if (unsetFields.length > 0) patch.unset(unsetFields);
+    await patch.commit();
   } else {
     const createDoc: { _type: string } & Record<string, unknown> = { ...doc, _type: collection.sanityType };
     if (collection.hasSlug !== false) {

@@ -25,7 +25,8 @@ type TVVideo = {
   _id: string;
   title: string;
   slug: string;
-  youtubeUrl: string;
+  youtubeUrl?: string;
+  videoFileUrl?: string;
   featuredImage?: SanityImage;
   summary?: string;
   tags?: string[];
@@ -38,6 +39,8 @@ type HubCard = {
   categories: string[];
   href: string;
   videoId: string | null;
+  /** An uploaded video file, played in the modal instead of a YouTube embed. */
+  fileUrl?: string;
   thumb: { kind: "plain"; url: string } | { kind: "sanity"; image: SanityImage };
 };
 
@@ -114,13 +117,16 @@ function buildCards(videos: TVVideo[]): HubCard[] {
 
   for (const video of videos) {
     if (!video.featuredImage) continue;
+    const href = video.videoFileUrl || video.youtubeUrl;
+    if (!href) continue;
     cards.push({
       id: video._id,
       title: video.title,
       summary: video.summary,
       categories: video.tags && video.tags.length > 0 ? video.tags : ["Trending"],
-      href: video.youtubeUrl,
-      videoId: extractYoutubeId(video.youtubeUrl),
+      href,
+      videoId: video.videoFileUrl || !video.youtubeUrl ? null : extractYoutubeId(video.youtubeUrl),
+      fileUrl: video.videoFileUrl,
       thumb: { kind: "sanity", image: video.featuredImage },
     });
   }
@@ -174,7 +180,7 @@ export default function LifeHealthTV2Content({ videos = [] }: { videos?: TVVideo
   const heroCards = cards.slice(0, 2);
 
   const playCard = (card: HubCard) => {
-    if (card.videoId) {
+    if (card.videoId || card.fileUrl) {
       setPlaying(card);
     } else {
       window.open(card.href, "_blank", "noopener,noreferrer");
@@ -280,7 +286,7 @@ export default function LifeHealthTV2Content({ videos = [] }: { videos?: TVVideo
       </div>
       </div>
 
-      <VideoModal videoId={playing?.videoId ?? null} title={playing?.title} onClose={() => setPlaying(null)} />
+      <VideoModal videoId={playing?.videoId ?? null} fileUrl={playing?.fileUrl} title={playing?.title} onClose={() => setPlaying(null)} />
     </div>
   );
 }

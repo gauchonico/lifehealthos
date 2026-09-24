@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Filled-in copy of hostinger/upload.php (contains UPLOAD_SECRET) for uploading to Hostinger
+hostinger/upload.deploy.php

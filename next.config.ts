@@ -4,6 +4,14 @@ const nextConfig: NextConfig = {
   // Deployed to Vercel as a real Next.js app (not a static export) — this
   // is what makes the /workspace admin (server-side auth, Sanity writes)
   // and on-demand revalidation from the Sanity webhook possible.
+  experimental: {
+    serverActions: {
+      // Workspace forms upload images/files through saveDocument; the 1MB
+      // default rejects ordinary photos. Kept under Vercel's ~4.5MB request
+      // body cap — videos bypass this entirely (see VideoUploadField).
+      bodySizeLimit: "4mb",
+    },
+  },
   images: {
     // Sanity's image CDN already resizes via urlFor().width()/.url();
     // no need for Vercel's optimizer to double-process those.

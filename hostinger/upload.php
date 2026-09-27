@@ -19,6 +19,7 @@ const ALLOWED_ORIGINS = [
     'https://lhn.lifehealth.global',
     'http://localhost:3000',
     'https://lifehealth.global',
+    'https://www.lifehealth.global',
 ];
 
 

@@ -25,7 +25,22 @@ function base64url(input: Buffer | string) {
   return Buffer.from(input).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-export async function createVideoUpload(filename: string, size: number): Promise<VideoUploadTicket> {
+// Errors are returned rather than thrown: in production Next.js replaces a
+// thrown Server Action error's message with a generic "An error occurred in
+// the Server Components render", which hides the actual cause from the admin.
+export async function createVideoUpload(
+  filename: string,
+  size: number,
+): Promise<{ ok: true; ticket: VideoUploadTicket } | { ok: false; error: string }> {
+  try {
+    return { ok: true, ticket: await issueTicket(filename, size) };
+  } catch (err) {
+    console.error("createVideoUpload failed", err);
+    return { ok: false, error: err instanceof Error ? err.message : "Couldn't start the upload." };
+  }
+}
+
+async function issueTicket(filename: string, size: number): Promise<VideoUploadTicket> {
   const cookieStore = await cookies();
   const session = cookieStore.get(SESSION_COOKIE_NAME)?.value;
   if (!session || !(await verifySessionToken(session))) {

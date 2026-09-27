@@ -31,7 +31,15 @@ function sendChunk(
     xhrRef.current = xhr;
     xhr.open("POST", uploadUrl);
     xhr.upload.onprogress = (e) => onProgress(e.loaded);
-    xhr.onerror = () => reject(Object.assign(new Error("Network error while uploading."), { retryable: true }));
+    xhr.onerror = () =>
+      reject(
+        Object.assign(
+          // Also what a CORS rejection looks like, so name both ends to make
+          // an origin missing from ALLOWED_ORIGINS in upload.php easy to spot.
+          new Error(`Couldn't reach ${uploadUrl} from ${window.location.origin}. Check your connection, and that this site is listed in ALLOWED_ORIGINS in upload.php.`),
+          { retryable: true },
+        ),
+      );
     xhr.onabort = () => reject(Object.assign(new Error("Upload cancelled."), { aborted: true }));
     xhr.onload = () => {
       let data: { done?: boolean; received?: number; error?: string } = {};
@@ -92,7 +100,9 @@ export default function VideoUploadField({
     cancelledRef.current = false;
 
     try {
-      const ticket = await createVideoUpload(file.name, file.size);
+      const result = await createVideoUpload(file.name, file.size);
+      if (!result.ok) throw new Error(result.error);
+      const { ticket } = result;
       let offset = 0;
       let retries = 0;
 

@@ -39,6 +39,7 @@ const buildNavItems = (solutions) => [
       { label: "White Papers", href: "/resources/white-papers" },
       { label: "Product Briefs", href: "/resources/product-briefs" },
       { label: "Videos & Webinars", href: "/resources/videos-webinars" },
+      { label: "How-To Guides", href: "/how-to" },
       { label: "News", href: "/resources/news" },
       { label: "FAQ", href: "/faq" },
       { label: "Legal", href: "/legal" },
@@ -48,6 +49,7 @@ const buildNavItems = (solutions) => [
     label: "LifeHealth TV",
     children: [
       { label: "Overview", href: "/lifehealth-tv" },
+      { label: "How-To Guides", href: "/how-to" },
       { label: "Platform Tours", href: "/lifehealth-tv" },
       { label: "Real Deployments", href: "/lifehealth-tv" },
       { label: "Product Demos", href: "/lifehealth-tv" },

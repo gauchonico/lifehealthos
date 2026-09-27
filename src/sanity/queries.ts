@@ -104,6 +104,22 @@ export const allVideosQuery = groq`
   }
 `
 
+// Videos tagged "How-to" in the workspace (case-insensitive; also accepts
+// "How to" / "Howto") — product explainers shown on /how-to.
+export const howToVideosQuery = groq`
+  *[_type == "video" && isPublished == true && count(tags[lower(@) in ["how-to", "how to", "howto"]]) > 0] | order(publishDate desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    youtubeUrl,
+    videoFileUrl,
+    featuredImage,
+    summary,
+    tags,
+    publishDate
+  }
+`
+
 export const videoBySlugQuery = groq`
   *[_type == "video" && slug.current == $slug][0] {
     _id,

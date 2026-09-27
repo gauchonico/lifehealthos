@@ -16,6 +16,7 @@ const staticRoutes = [
   "/capabilities",
   "/data-analytics",
   "/lifehealth-tv",
+  "/how-to",
   "/long-term-care",
   "/empower",
   "/trust-center",

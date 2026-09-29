@@ -29,7 +29,37 @@ function productTags(video: HowToVideo) {
   return (video.tags ?? []).filter((tag) => !HOW_TO_TAGS.has(tag.trim().toLowerCase()));
 }
 
-type Playing = { videoId: string | null; fileUrl?: string; title: string };
+type Playing = { videoId: string | null; fileUrl?: string; title: string; orientation?: HowToVideo["orientation"] };
+
+function VideoCard({ video, onPlay }: { video: HowToVideo; onPlay: () => void }) {
+  const portrait = video.orientation === "portrait";
+  const image = video.featuredImage
+    ? urlFor(video.featuredImage).width(portrait ? 360 : 640).height(portrait ? 640 : 360).url()
+    : null;
+
+  return (
+    <button type="button" onClick={onPlay} className="group block w-full text-left">
+      <div className={`relative overflow-hidden rounded-xl bg-slate-200 shadow-md ring-1 ring-slate-100 ${portrait ? "aspect-[9/16]" : "aspect-video"}`}>
+        {image ? (
+          <NextImage
+            src={image}
+            alt=""
+            fill
+            sizes={portrait ? "(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"}
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : null}
+        <span className="absolute inset-0 flex items-center justify-center bg-navy-900/0 transition-colors group-hover:bg-navy-900/30">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg transition-colors group-hover:bg-teal-500">
+            <Play className="h-5 w-5 fill-teal-600 text-teal-600 group-hover:fill-white group-hover:text-white" />
+          </span>
+        </span>
+      </div>
+      <p className="mt-3 font-heading text-base font-semibold leading-snug text-navy-900 group-hover:text-teal-600">{video.title}</p>
+      {video.summary ? <p className="mt-1 line-clamp-2 text-sm text-slate-500">{video.summary}</p> : null}
+    </button>
+  );
+}
 
 export default function HowToContent({ videos = [] }: { videos?: HowToVideo[] }) {
   const playable = useMemo(() => videos.filter((v) => v.videoFileUrl || v.youtubeUrl), [videos]);
@@ -53,10 +83,13 @@ export default function HowToContent({ videos = [] }: { videos?: HowToVideo[] })
     });
   }, [playable, active, query]);
 
+  const landscape = visible.filter((video) => video.orientation !== "portrait");
+  const portrait = visible.filter((video) => video.orientation === "portrait");
+
   const play = (video: HowToVideo) => {
     const videoId = video.videoFileUrl || !video.youtubeUrl ? null : extractYoutubeId(video.youtubeUrl);
     if (video.videoFileUrl || videoId) {
-      setPlaying({ videoId, fileUrl: video.videoFileUrl, title: video.title });
+      setPlaying({ videoId, fileUrl: video.videoFileUrl, title: video.title, orientation: video.orientation });
     } else if (video.youtubeUrl) {
       window.open(video.youtubeUrl, "_blank", "noopener,noreferrer");
     }
@@ -128,36 +161,18 @@ export default function HowToContent({ videos = [] }: { videos?: HowToVideo[] })
                   {visible.length === 0 ? (
                     <p className="text-sm text-slate-400">No guides match your search.</p>
                   ) : (
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                      {visible.map((video) => (
-                        <button key={video._id} type="button" onClick={() => play(video)} className="group block w-full text-left">
-                          <div className="relative aspect-video overflow-hidden rounded-xl bg-slate-200 shadow-md ring-1 ring-slate-100">
-                            {video.featuredImage ? (
-                              <NextImage
-                                src={urlFor(video.featuredImage).width(640).height(360).url()}
-                                alt=""
-                                fill
-                                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                              />
-                            ) : null}
-                            <span className="absolute inset-0 flex items-center justify-center bg-navy-900/0 transition-colors group-hover:bg-navy-900/30">
-                              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg transition-colors group-hover:bg-teal-500">
-                                <Play className="h-5 w-5 fill-teal-600 text-teal-600 group-hover:fill-white group-hover:text-white" />
-                              </span>
-                            </span>
-                          </div>
-                          {productTags(video).length > 0 ? (
-                            <div className="mt-3 flex flex-wrap gap-1.5">
-                              {productTags(video).map((tag) => (
-                                <span key={tag} className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">{tag}</span>
-                              ))}
-                            </div>
-                          ) : null}
-                          <p className="mt-2 font-heading text-base font-semibold leading-snug text-navy-900 group-hover:text-teal-600">{video.title}</p>
-                          {video.summary ? <p className="mt-1 line-clamp-2 text-sm text-slate-500">{video.summary}</p> : null}
-                        </button>
-                      ))}
+                    <div className="space-y-12">
+                      {/* Portrait (9:16) guides get their own denser grid so tall cards don't stretch the landscape rows. */}
+                      {landscape.length > 0 ? (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                          {landscape.map((video) => <VideoCard key={video._id} video={video} onPlay={() => play(video)} />)}
+                        </div>
+                      ) : null}
+                      {portrait.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
+                          {portrait.map((video) => <VideoCard key={video._id} video={video} onPlay={() => play(video)} />)}
+                        </div>
+                      ) : null}
                     </div>
                   )}
                 </motion.div>
@@ -167,7 +182,7 @@ export default function HowToContent({ videos = [] }: { videos?: HowToVideo[] })
         </div>
       </div>
 
-      <VideoModal videoId={playing?.videoId ?? null} fileUrl={playing?.fileUrl} title={playing?.title} onClose={() => setPlaying(null)} />
+      <VideoModal videoId={playing?.videoId ?? null} fileUrl={playing?.fileUrl} title={playing?.title} orientation={playing?.orientation} onClose={() => setPlaying(null)} />
     </div>
   );
 }

@@ -53,7 +53,7 @@ export default function DocumentForm({
               <select
                 name={field.name}
                 required={field.required}
-                defaultValue={typeof value === "string" ? value : ""}
+                defaultValue={typeof value === "string" ? value : field.defaultValue ?? ""}
                 className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:border-teal-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
               >
                 <option value="" disabled>

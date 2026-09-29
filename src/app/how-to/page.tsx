@@ -17,6 +17,7 @@ export type HowToVideo = {
   slug: string;
   youtubeUrl?: string;
   videoFileUrl?: string;
+  orientation?: "landscape" | "portrait";
   featuredImage?: SanityImage;
   summary?: string;
   tags?: string[];

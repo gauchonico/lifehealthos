@@ -113,6 +113,7 @@ export const howToVideosQuery = groq`
     "slug": slug.current,
     youtubeUrl,
     videoFileUrl,
+    orientation,
     featuredImage,
     summary,
     tags,

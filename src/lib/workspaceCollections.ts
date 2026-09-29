@@ -2,7 +2,15 @@ export type ObjectListItemField = { name: string; label: string; multiline?: boo
 
 export type FieldConfig =
   | { name: string; label: string; type: "string" | "text" | "url" | "date" | "tags" | "markdown" | "number"; required?: boolean }
-  | { name: string; label: string; type: "select"; options: { label: string; value: string }[]; required?: boolean }
+  | {
+      name: string;
+      label: string;
+      type: "select";
+      options: { label: string; value: string }[];
+      required?: boolean;
+      /** Pre-selected when the document has no value yet (new documents, or ones created before the field existed). */
+      defaultValue?: string;
+    }
   | { name: string; label: string; type: "boolean" }
   | { name: string; label: string; type: "image" | "file"; required?: boolean }
   /** A video file uploaded from the browser to Hostinger (see VideoUploadField); stored on the document as a plain URL string field. */
@@ -58,6 +66,17 @@ export const collections: CollectionConfig[] = [
       { name: "title", label: "Title", type: "string", required: true },
       { name: "youtubeUrl", label: "YouTube URL (leave empty if uploading a file below)", type: "url" },
       { name: "videoFileUrl", label: "Or Upload a Video File", type: "videoFile" },
+      {
+        name: "orientation",
+        label: "Orientation (of the video and its featured image)",
+        type: "select",
+        required: true,
+        defaultValue: "landscape",
+        options: [
+          { label: "Landscape (16:9)", value: "landscape" },
+          { label: "Portrait (9:16)", value: "portrait" },
+        ],
+      },
       { name: "featuredImage", label: "Featured Image", type: "image", required: true },
       { name: "summary", label: "Summary", type: "text" },
       { name: "tags", label: "Tags (comma-separated)", type: "tags" },

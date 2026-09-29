@@ -13,6 +13,7 @@ import XValidatorFeature from "@/components/home/XValidatorFeature";
 import TractionSection from "@/components/home/TractionSection";
 import PartnersSection from "@/components/home/PartnersSection";
 import LifeHealthTVSection from "@/components/home/LifeHealthTVSection";
+import SocialFeedSection from "@/components/home/SocialFeedSection";
 import ResourcesSection from "@/components/home/ResourcesSection";
 import CTABanner from "@/components/shared/CTABanner";
 
@@ -23,6 +24,7 @@ export default async function Home() {
     <>
       <HeroSection />
       <SolutionSelector solutions={solutions} />
+      <SocialFeedSection />
       <FeaturedSolution />
       <HowItWorks />
       <XValidatorFeature />
